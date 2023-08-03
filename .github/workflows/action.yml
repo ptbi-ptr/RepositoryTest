@@ -12,14 +12,7 @@ jobs:
  github-action:
  runs-on: ubuntu-latest
  steps:
- - name: Checkout
- uses: actions/checkout@v2.3.4
- - name: Run Blazemeter test
- uses: BlazeRunner-BZR/Github-Action@v8.1
- id: run-test
- with:
- apiKey: ${{env.apiKey}}
- apiSecret: ${{env.apiSecret}}
- testID: ${{env.testID}}
- continuePipeline: ${{env.continuePipeline}}
- showTailLog: ${{env.showTailLog}}
+ - name: Run ShellCheck
+  # You may pin to the exact commit or the version.
+  # uses: bewuethr/shellcheck-action@a7092784dbc0f7b2139dd8396ab357fe4678e958
+  uses: bewuethr/shellcheck-action@v2.1.2
