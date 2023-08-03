@@ -1,18 +1,18 @@
-name: github-action
-env:
- apiKey: "e4703befb6e9496247981274"
- apiSecret: "3112cfe2b20068b59743b0d8c3c49fa338367c48c41825273942e1c6d4b96d6aa9a07bf8"
- testID: "12956626"
- continuePipeline: "false"
- showTailLog: "false"
+name: Run Script
 
-on: 
-push:
+on: [push]
+
 jobs:
- github-action:
- runs-on: ubuntu-latest
- steps:
- - name: Run ShellCheck
-  # You may pin to the exact commit or the version.
-  # uses: bewuethr/shellcheck-action@a7092784dbc0f7b2139dd8396ab357fe4678e958
-  uses: bewuethr/shellcheck-action@v2.1.2
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Make script executable
+        run: chmod +x sampletest.sh
+
+      - name: Run script
+        run: sampletest.sh
+
