@@ -5,21 +5,46 @@ env:
  testID: "12956626"
  continuePipeline: "false"
  showTailLog: "false"
+name: BlazeMeter Load Test
 
-on: [push]
+name: BlazeMeter Load Test
+
+on:
+  push:
+    branches:
+      - main
 
 jobs:
- github-action:
- runs-on: ubuntu-latest
- steps:
- - name: Checkout
- uses: actions/checkout@v2.3.4
- - name: Run Blazemeter test
- uses: BlazeRunner-BZR/Github-Action@v8.1
- id: run-test
- with:
- apiKey: ${{env.apiKey}}
- apiSecret: ${{env.apiSecret}}
- testID: ${{env.testID}}
- continuePipeline: ${{env.continuePipeline}}
- showTailLog: ${{env.showTailLog}}
+  run-blazemeter-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run BlazeMeter Load Test
+        env:
+          BLAZEMETER_API_TOKEN: ${{ e4703befb6e9496247981274.3112cfe2b20068b59743b0d8c3c49fa338367c48c41825273942e1c6d4b96d6aa9a07bf8 }}
+        run: |
+          # Upload JMeter script to BlazeMeter
+          
+         
+
+         UPLOAD_RESPONSE=$(curl -X POST -H "Authorization: Bearer $BLAZEMETER_API_TOKEN" -F "files[]=@sample.csv" "https://a.blazemeter.com/api/v4/folders/64c2746a315855087d0d73c4/files")
+
+          # Get the test ID from the response
+          TEST_ID=$(echo $UPLOAD_RESPONSE | jq -r '.result[0].id')
+
+          # Start the test
+          START_RESPONSE=$(curl -X POST -H "Authorization: Bearer $BLAZEMETER_API_TOKEN" "https://a.blazemeter.com/api/v4/folders/$TEST_ID/start")
+
+          # Monitor test execution status (adjust the sleep interval as needed)
+          while true; do
+            STATUS=$(curl -s -H "Authorization: Bearer $BLAZEMETER_API_TOKEN" "https://a.blazemeter.com/api/v4/folders/$TEST_ID" | jq -r '.result[0].status')
+            if [ "$STATUS" == "ENDED" ]; then
+              echo "Test finished."
+              break
+            fi
+            echo "Test still running..."
+            sleep 60  # Check every minute
+          done
