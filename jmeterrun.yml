@@ -1,0 +1,30 @@
+name: jmeter_run
+
+env:
+ apiKey: "e4703befb6e9496247981274"
+ apiSecret: "3112cfe2b20068b59743b0d8c3c49fa338367c48c41825273942e1c6d4b96d6aa9a07bf8"
+ testID: "12956626"
+ continuePipeline: "false"
+ showTailLog: "false"
+
+on:
+   push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+        - name: Run Blazemeter test
+     uses: BlazeRunner-BZR/Github-Action@v8.1
