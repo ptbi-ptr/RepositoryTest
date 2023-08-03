@@ -1,4 +1,4 @@
-name: BlazeMeter Load Test
+name: BlazeMeter Load Tests
 
 on:
   push:
