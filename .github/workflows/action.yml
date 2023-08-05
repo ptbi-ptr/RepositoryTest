@@ -1,55 +1,18 @@
-name: BlazeMeter Load Tests
 
-on:
-  push:
-    branches:
-      - main
+name: Run Script
+
+on: [push]
 
 jobs:
-  run-blazemeter-test:
+  run-script:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Run BlazeMeter Load Test
-        env:
-          BLAZEMETER_API_TOKEN: ${{ secrets.BLAZEMETER_API_TOKEN }}  # Use your secret name here
-        run: |
-          # Upload JMeter script to BlazeMeter
-          FILE_UPLOAD_RESPONSE=$(curl -X POST -H "Authorization: Bearer $BLAZEMETER_API_TOKEN" -F "file=@sample.csv" "https://a.blazemeter.com/api/v4/folders/64c2746a315855087d0d73c4/files")
+      - name: Make script executable
+        run: chmod +x sampletest.sh
 
-          # Get the file ID from the response
-          FILE_ID=$(echo $FILE_UPLOAD_RESPONSE | jq -r '.result.id')
-
-          # Create a test using the uploaded file
-          TEST_CREATION_RESPONSE=$(curl -X POST -H "Authorization: Bearer $BLAZEMETER_API_TOKEN" -H "Content-Type: application/json" -d '{
-            "configuration": {
-              "filename": "sample.csv",
-              "type": "taurus",
-              "files": [
-                {
-                  "id": "'$FILE_ID'",
-                  "name": "sample.csv"
-                }
-              ]
-            }
-          }' "https://a.blazemeter.com/api/v4/tests")
-
-          # Get the test ID from the response
-          TEST_ID=$(echo $TEST_CREATION_RESPONSE | jq -r '.result.id')
-
-          # Start the test
-          START_RESPONSE=$(curl -X POST -H "Authorization: Bearer $BLAZEMETER_API_TOKEN" "https://a.blazemeter.com/api/v4/tests/$TEST_ID/start")
-
-          # Monitor test execution status (adjust the sleep interval as needed)
-          while true; do
-            STATUS=$(curl -s -H "Authorization: Bearer $BLAZEMETER_API_TOKEN" "https://a.blazemeter.com/api/v4/tests/$TEST_ID" | jq -r '.result.status')
-            if [ "$STATUS" == "ENDED" ]; then
-              echo "Test finished."
-              break
-            fi
-            echo "Test still running..."
-            sleep 60  # Check every minute
-          done
+      - name: Run script
+        run: ./sampletest.sh
